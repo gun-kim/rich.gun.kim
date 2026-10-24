@@ -31,13 +31,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # packageManager 필드의 pnpm 버전을 쓴다.
-      - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: pnpm
+
+      # Dockerfile 과 같이 corepack 으로 packageManager 필드의 pnpm 버전을 쓴다.
+      # 셀프호스티드 러너는 pnpm 스토어가 디스크에 남으므로 캐시는 따로 두지 않는다.
+      - run: corepack enable
 
       - run: pnpm install --frozen-lockfile
 

@@ -38,6 +38,7 @@ tsconfig.base.json  # 모든 워크스페이스가 extends 하는 공유 tsconfi
 | `pnpm lint` | 모든 워크스페이스 lint (oxlint) |
 | `pnpm typecheck` | 공유 패키지를 먼저 빌드한 뒤 모든 워크스페이스 타입 검사 (`tsc --noEmit`) |
 | `pnpm check` | lint → typecheck 를 순서대로 실행 |
+| `pnpm test` | 공유 패키지를 먼저 빌드한 뒤 테스트 실행 (vitest). 실제 외부 API 를 호출한다 |
 
 web과 api는 별도 출처(도메인)로 동작합니다.
 
@@ -58,3 +59,16 @@ web과 api는 별도 출처(도메인)로 동작합니다.
 
 CODEF 키는 앱 시작 때가 아니라 CODEF 를 호출할 때 검사한다. 업비트 API Key 는 사용자마다 달라 DB 에 저장하므로 환경 변수가 없다.
 CODEF 설정의 상세는 `docs/codef/README.md` 를 참고한다.
+
+## 테스트 (api)
+
+`apps/api/src/external-connection` 의 CODEF·업비트 연동 서비스는 실제 API 를 호출해 테스트한다.
+PR 에서는 키의 허용 IP 를 등록해 둔 `osaka` 라벨 셀프호스티드 러너에서 돌고
+(`.github/workflows/api-external-connection-test.yml`), 아래 값은 저장소 Secrets 로 넣는다.
+로컬에서는 값이 없으면 해당 테스트를 건너뛰고, CI(`CI` 가 설정된 환경)에서는 실패한다.
+
+| 변수 | 설명 |
+| --- | --- |
+| `CODEF_CLIENT_ID` · `CODEF_CLIENT_SECRET` · `CODEF_PUBLIC_KEY` | 앱과 같은 CODEF 키. `CODEF_ENVIRONMENT` 는 저장소 Variables 로 넣고, 없으면 `development` |
+| `CODEF_CONNECTED_ID` | 조회할 커넥티드 아이디. 등록된 기관별로 은행·증권·카드 조회를 한 번씩 한다 |
+| `UPBIT_ACCESS_KEY` · `UPBIT_SECRET_KEY` | [자산조회] 권한이 있는 업비트 API Key |

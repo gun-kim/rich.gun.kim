@@ -1,0 +1,54 @@
+# PR 에서 외부 연동 서비스(CODEF, 업비트) 테스트를 실제 API 로 돌린다.
+# CODEF 와 업비트 API Key 는 허용 IP 에서만 호출되므로, IP 를 등록해 둔 osaka 셀프호스티드 러너에서 실행한다.
+name: Test external connections
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - apps/api/src/external-connection/**
+      - apps/api/package.json
+      - apps/api/vitest.config.mts
+      - packages/**
+      - pnpm-lock.yaml
+      - .github/workflows/api-external-connection-test.yml
+
+# 과도한 호출로 기관이 IP 를 차단하지 않도록 PR 마다 하나만 돌린다.
+concurrency:
+  group: api-external-connection-test-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test-external-connections:
+    name: Test external connections
+    # 포크 PR 의 코드는 셀프호스티드 러너에서 시크릿과 함께 실행하지 않는다.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, osaka]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # packageManager 필드의 pnpm 버전을 쓴다.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build:packages
+
+      - run: pnpm --filter @rich/api test
+        env:
+          CODEF_ENVIRONMENT: ${{ vars.CODEF_ENVIRONMENT || 'development' }}
+          CODEF_CLIENT_ID: ${{ secrets.CODEF_CLIENT_ID }}
+          CODEF_CLIENT_SECRET: ${{ secrets.CODEF_CLIENT_SECRET }}
+          CODEF_PUBLIC_KEY: ${{ secrets.CODEF_PUBLIC_KEY }}
+          CODEF_CONNECTED_ID: ${{ secrets.CODEF_CONNECTED_ID }}
+          UPBIT_ACCESS_KEY: ${{ secrets.UPBIT_ACCESS_KEY }}
+          UPBIT_SECRET_KEY: ${{ secrets.UPBIT_SECRET_KEY }}

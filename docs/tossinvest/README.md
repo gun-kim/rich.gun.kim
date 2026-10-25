@@ -15,7 +15,7 @@
 
 ## 이 프로젝트에서 토스증권이 맡는 데이터
 
-토스증권 계좌의 국내·미국 주식 보유 현황과 평가금액, 현금이다. 업비트와 달리 보유 주식 조회가 현재가·평가금액·손익을 함께 준다.
+토스증권 계좌의 국내·미국 주식 보유 현황과 평가금액, 현금, 종목 정보(시장·종목 유형)다. 업비트와 달리 보유 주식 조회가 현재가·평가금액·손익을 함께 준다.
 
 - 금액은 **거래 통화별로 따로** 합산된다 (`krw` 는 국내 종목, `usd` 는 미국 종목). 원화 합계는 `usd × 환율` 로 직접 계산한다.
 - 예수금 조회 API 가 없어 **현금 기반 매수 가능 금액**(`cashBuyingPower`)을 현금 잔고로 쓴다.
@@ -30,6 +30,7 @@
 | `getAccounts(credentials)` | 계좌 목록 조회 | `GET /api/v1/accounts` | | `ACCOUNT` 초당 1회 |
 | `getHoldings(credentials, accountSeq)` | 보유 주식 조회 | `GET /api/v1/holdings` | 필요 | `ASSET` 초당 5회 |
 | `getCashBuyingPower(credentials, accountSeq, currency)` | 매수 가능 금액 조회 | `GET /api/v1/buying-power?currency=KRW` | 필요 | `ORDER_INFO` 초당 6회 |
+| `getStocks(credentials, symbols)` | 종목 기본 정보 조회 | `GET /api/v1/stocks?symbols=005930,AAPL` | | `STOCK` 초당 5회 |
 | `getUsdKrwRate(credentials)` | 환율 조회 | `GET /api/v1/exchange-rate?baseCurrency=USD&quoteCurrency=KRW` | | `MARKET_INFO` 초당 3회 |
 
 호스트는 `https://openapi.tossinvest.com` 이다. 한도는 클라이언트 × 그룹 단위이고 사전 공지 없이 바뀔 수 있다.
@@ -117,6 +118,21 @@ const stockKrw = holdings.marketValue.amount.krw + (holdings.marketValue.amount.
   }
 }
 ```
+
+## 종목 기본 정보 조회 — `GET /api/v1/stocks`
+
+- 입력: `symbols` (필수) — 쉼표로 구분한 종목 심볼, 한 번에 최대 200건. 넘으면 `400 invalid-request` 라 `getStocks` 는 중복을 없애고 200건씩 나눠 조회한다.
+- 없는 종목을 넣었을 때의 동작은 명세에 없다. 호출하는 쪽은 결과에 없는 종목을 "정보 없음"으로 다룬다.
+
+| 필드 | 설명 | 수집 |
+|---|---|---|
+| `symbol` · `name` · `englishName` | 심볼, 한글·영문 종목명 | `englishName` 제외 ✅ |
+| `isinCode` | 국제증권식별번호 (예: `KR7005930003`) | ✅ |
+| `market` | `KOSPI` · `KOSDAQ` · `NYSE` · `NASDAQ` · `AMEX` · `KR_ETC` · `US_ETC` | ✅ |
+| `securityType` | `STOCK` · `ETF` · `ETN` · `REIT` · `FOREIGN_STOCK` 등 | ✅ |
+| `status` | `SCHEDULED` · `ACTIVE` · `DELISTED` | ✅ |
+| `currency` | `KRW` · `USD` | ✅ |
+| `isCommonShare`, `listDate`, `delistDate`, `sharesOutstanding`, `leverageFactor`, `koreanMarketDetail` | 보통주 여부, 상장·상폐일, 발행주식수, 레버리지 배수, 국내 거래정지 등 | |
 
 ## 매수 가능 금액 조회 — `GET /api/v1/buying-power`
 

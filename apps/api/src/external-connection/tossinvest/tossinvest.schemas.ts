@@ -82,6 +82,24 @@ export const holdingsSchema = z.object({
   ),
 });
 
+export const stocksSchema = z.array(
+  z.object({
+    /** KR: 6자리 종목코드, US: 티커 */
+    symbol: z.string(),
+    /** 한글 종목명 */
+    name: z.string(),
+    /** 국제증권식별번호 (ISO 6166) */
+    isinCode: z.string(),
+    /** KOSPI, KOSDAQ, NYSE, NASDAQ, AMEX, KR_ETC, US_ETC */
+    market: z.string(),
+    /** STOCK, ETF, ETN, REIT 등 */
+    securityType: z.string(),
+    /** SCHEDULED, ACTIVE, DELISTED */
+    status: z.string(),
+    currency,
+  }),
+);
+
 export const buyingPowerSchema = z.object({
   currency,
   /** 현금 기반 매수 가능 금액 (미수 미발생 기준) */
@@ -100,4 +118,5 @@ export const exchangeRateSchema = z.object({
 export type TossInvestAccount = z.output<typeof accountsSchema>[number];
 export type TossInvestHoldings = z.output<typeof holdingsSchema>;
 export type TossInvestHolding = TossInvestHoldings['items'][number];
+export type TossInvestStock = z.output<typeof stocksSchema>[number];
 export type TossInvestExchangeRate = z.output<typeof exchangeRateSchema>;

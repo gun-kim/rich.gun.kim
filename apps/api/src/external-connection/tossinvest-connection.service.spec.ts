@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { TossInvestClient } from './tossinvest/tossinvest.client';
+import type { TossInvestAccount } from './tossinvest/tossinvest.schemas';
 import { TossInvestConnectionService } from './tossinvest-connection.service';
 
 /*
@@ -17,18 +18,24 @@ const credentials = {
 const hasCredentials = Boolean(credentials.clientId && credentials.clientSecret);
 const service = new TossInvestConnectionService(new TossInvestClient());
 
-// TODO: Secrets 를 등록할 때까지 임시로 건너뛴다.
-//  다시 돌리려면 아래를 describe.skipIf(!hasCredentials && !process.env.CI) 로 되돌린다.
-describe.skip('TossInvestConnectionService', () => {
+describe.skipIf(!hasCredentials && !process.env.CI)('TossInvestConnectionService', () => {
+  let accounts: TossInvestAccount[];
   let accountSeq: number;
 
   beforeAll(async () => {
     if (!hasCredentials) {
       throw new Error('TOSSINVEST_CLIENT_ID_FOR_TEST, TOSSINVEST_CLIENT_SECRET_FOR_TEST 가 설정되지 않았습니다.');
     }
-    const accounts = await service.getAccounts(credentials);
+    accounts = await service.getAccounts(credentials);
+    accountSeq = accounts[0]?.accountSeq;
+  });
+
+  it('getAccounts: 내 계좌 목록을 조회한다', () => {
     expect(accounts.length).toBeGreaterThan(0);
-    accountSeq = accounts[0].accountSeq;
+    for (const account of accounts) {
+      expect(account.accountNo).not.toBe('');
+      expect(Number.isInteger(account.accountSeq)).toBe(true);
+    }
   });
 
   it('getHoldings: 보유 주식과 통화별 평가금액을 조회한다', async () => {
@@ -40,6 +47,16 @@ describe.skip('TossInvestConnectionService', () => {
       expect(item.quantity).toBeGreaterThan(0);
       expect(item.lastPrice).toBeGreaterThan(0);
     }
+  });
+
+  it('getStocks: 국내·미국 종목의 기본 정보를 조회한다', async () => {
+    const stocks = await service.getStocks(credentials, ['005930', 'AAPL', '005930']);
+
+    expect(stocks.map(({ symbol }) => symbol).toSorted()).toEqual(['005930', 'AAPL']);
+    const samsung = stocks.find(({ symbol }) => symbol === '005930');
+    expect(samsung).toMatchObject({ market: 'KOSPI', currency: 'KRW' });
+    const apple = stocks.find(({ symbol }) => symbol === 'AAPL');
+    expect(apple).toMatchObject({ market: 'NASDAQ', currency: 'USD' });
   });
 
   it('getCashBuyingPower: 원화·달러 현금 매수 가능 금액을 조회한다', async () => {

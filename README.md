@@ -59,7 +59,7 @@ CODEF 연동은 코드에서 제거했고, 조사 자료만 `docs/codef` 에 남
 ## 테스트 (api)
 
 `apps/api/src/external-connection` 의 업비트·토스증권 연동 서비스는 실제 API 를 호출해 테스트한다.
-PR 에서는 키의 허용 IP 를 등록해 둔 `osaka` 라벨 셀프호스티드 러너에서 돌고
+PR 과 main push 에서는 키의 허용 IP 를 등록해 둔 `osaka` 라벨 셀프호스티드 러너에서 돌고
 (`.github/workflows/api-external-connection-test.yml`), 아래 값은 저장소 Secrets 로 넣는다.
 로컬에서는 값이 없으면 해당 테스트를 건너뛰고, CI(`CI` 가 설정된 환경)에서는 실패한다.
 

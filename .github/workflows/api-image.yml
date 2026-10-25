@@ -1,10 +1,11 @@
 # main 에 push 되면 api 이미지를 빌드해 GHCR 에 latest 태그로 올린다.
 name: Push API image to GHCR
 
+# 당분간 main push 자동 실행을 끈다. 되살리려면 아래 push 블록의 주석을 푼다.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+  # push:
+  #   branches: [main]
 
 concurrency:
   group: api-image

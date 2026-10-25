@@ -1,21 +1,23 @@
 # PR 에서 api 이미지가 빌드되는지만 확인한다. 레지스트리에는 올리지 않는다.
 name: Check API image build
 
+# 당분간 PR 자동 실행을 끈다. 되살리려면 아래 pull_request 블록의 주석을 푼다.
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - apps/api/**
-      - packages/**
-      - package.json
-      - pnpm-lock.yaml
-      - pnpm-workspace.yaml
-      - tsconfig.base.json
-      - .dockerignore
-      - .github/workflows/api-image*.yml
+  workflow_dispatch:
+  # pull_request:
+  #   branches: [main]
+  #   paths:
+  #     - apps/api/**
+  #     - packages/**
+  #     - package.json
+  #     - pnpm-lock.yaml
+  #     - pnpm-workspace.yaml
+  #     - tsconfig.base.json
+  #     - .dockerignore
+  #     - .github/workflows/api-image*.yml
 
 concurrency:
-  group: api-image-check-${{ github.event.pull_request.number }}
+  group: api-image-check-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:

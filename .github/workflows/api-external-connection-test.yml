@@ -49,6 +49,6 @@ jobs:
           CODEF_CLIENT_ID: ${{ secrets.CODEF_CLIENT_ID }}
           CODEF_CLIENT_SECRET: ${{ secrets.CODEF_CLIENT_SECRET }}
           CODEF_PUBLIC_KEY: ${{ secrets.CODEF_PUBLIC_KEY }}
-          CODEF_CONNECTED_ID: ${{ secrets.CODEF_CONNECTED_ID }}
-          UPBIT_ACCESS_KEY: ${{ secrets.UPBIT_ACCESS_KEY }}
-          UPBIT_SECRET_KEY: ${{ secrets.UPBIT_SECRET_KEY }}
+          CODEF_CONNECTED_ID_FOR_TEST: ${{ secrets.CODEF_CONNECTED_ID_FOR_TEST }}
+          UPBIT_ACCESS_KEY_FOR_TEST: ${{ secrets.UPBIT_ACCESS_KEY_FOR_TEST }}
+          UPBIT_SECRET_KEY_FOR_TEST: ${{ secrets.UPBIT_SECRET_KEY_FOR_TEST }}

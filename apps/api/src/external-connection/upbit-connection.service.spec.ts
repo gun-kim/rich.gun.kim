@@ -8,8 +8,8 @@ import { UpbitConnectionService } from './upbit-connection.service';
  * 로컬에서는 키가 없으면 건너뛰고, CI 에서는 키가 없으면 실패한다.
  */
 const credentials = {
-  accessKey: process.env.UPBIT_ACCESS_KEY ?? '',
-  secretKey: process.env.UPBIT_SECRET_KEY ?? '',
+  accessKey: process.env.UPBIT_ACCESS_KEY_FOR_TEST ?? '',
+  secretKey: process.env.UPBIT_SECRET_KEY_FOR_TEST ?? '',
 };
 const hasCredentials = Boolean(credentials.accessKey && credentials.secretKey);
 const service = new UpbitConnectionService(new UpbitClient());
@@ -40,7 +40,7 @@ describe('UpbitConnectionService', () => {
   describe.skipIf(!hasCredentials && !process.env.CI)('getAccounts', () => {
     it('API Key 의 화폐별 보유수량과 매수 평균가를 조회한다', async () => {
       if (!hasCredentials) {
-        throw new Error('UPBIT_ACCESS_KEY, UPBIT_SECRET_KEY 가 설정되지 않았습니다.');
+        throw new Error('UPBIT_ACCESS_KEY_FOR_TEST, UPBIT_SECRET_KEY_FOR_TEST 가 설정되지 않았습니다.');
       }
       const accounts = await service.getAccounts(credentials);
 

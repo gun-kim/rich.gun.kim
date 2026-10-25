@@ -70,5 +70,5 @@ PR 에서는 키의 허용 IP 를 등록해 둔 `osaka` 라벨 셀프호스티�
 | 변수 | 설명 |
 | --- | --- |
 | `CODEF_CLIENT_ID` · `CODEF_CLIENT_SECRET` · `CODEF_PUBLIC_KEY` | 앱과 같은 CODEF 키. `CODEF_ENVIRONMENT` 는 저장소 Variables 로 넣고, 없으면 `development` |
-| `CODEF_CONNECTED_ID` | 조회할 커넥티드 아이디. 등록된 기관별로 은행·증권·카드 조회를 한 번씩 한다 |
-| `UPBIT_ACCESS_KEY` · `UPBIT_SECRET_KEY` | [자산조회] 권한이 있는 업비트 API Key |
+| `CODEF_CONNECTED_ID_FOR_TEST` | 조회할 커넥티드 아이디. 등록된 기관별로 은행·증권·카드 조회를 한 번씩 한다 |
+| `UPBIT_ACCESS_KEY_FOR_TEST` · `UPBIT_SECRET_KEY_FOR_TEST` | [자산조회] 권한이 있는 업비트 API Key |

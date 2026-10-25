@@ -6,7 +6,7 @@ import { CodefConnectionService } from './codef-connection.service';
 
 /*
  * 실제 CODEF API 를 호출한다. 키(CODEF_*)는 앱과 같은 환경 변수로 받고,
- * 조회할 커넥티드 아이디는 CODEF_CONNECTED_ID 로 받는다.
+ * 조회할 커넥티드 아이디는 CODEF_CONNECTED_ID_FOR_TEST 로 받는다.
  * 로컬에서는 값이 없으면 건너뛰고, CI 에서는 값이 없으면 실패한다.
  *
  * 과도하게 호출하면 기관이 IP 를 차단할 수 있으므로 기관마다 최소한만 조회한다.
@@ -14,7 +14,7 @@ import { CodefConnectionService } from './codef-connection.service';
  * 증권 종목별 잔고는 증권사에 따라 계좌 비밀번호가 필요해 테스트하지 않는다.
  */
 const config = codefConfigFromEnv();
-const connectedId = process.env.CODEF_CONNECTED_ID ?? '';
+const connectedId = process.env.CODEF_CONNECTED_ID_FOR_TEST ?? '';
 const runInCi = Boolean(process.env.CI);
 const service = new CodefConnectionService(new CodefClient(config));
 
@@ -47,7 +47,7 @@ describe.skipIf(!config.clientId && !runInCi)('CodefConnectionService', () => {
 
     beforeAll(async () => {
       if (!connectedId) {
-        throw new Error('CODEF_CONNECTED_ID 가 설정되지 않았습니다.');
+        throw new Error('CODEF_CONNECTED_ID_FOR_TEST 가 설정되지 않았습니다.');
       }
       ({ accountList: accounts } = await service.getRegisteredAccounts(connectedId));
     });

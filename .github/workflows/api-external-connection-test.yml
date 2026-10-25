@@ -1,4 +1,4 @@
-# PR 에서 외부 연동 서비스(CODEF, 업비트, 토스증권) 테스트를 실제 API 로 돌린다.
+# PR 과 main push 에서 외부 연동 서비스(CODEF, 업비트, 토스증권) 테스트를 실제 API 로 돌린다.
 # CODEF 와 업비트·토스증권 API Key 는 허용 IP 에서만 호출되므로, IP 를 등록해 둔 osaka 셀프호스티드 러너에서 실행한다.
 name: Test external connections
 
@@ -12,10 +12,20 @@ on:
       - packages/**
       - pnpm-lock.yaml
       - .github/workflows/api-external-connection-test.yml
+  # squash 머지 결과가 main 에서도 통과하는지 확인한다.
+  push:
+    branches: [main]
+    paths:
+      - apps/api/src/external-connection/**
+      - apps/api/package.json
+      - apps/api/vitest.config.mts
+      - packages/**
+      - pnpm-lock.yaml
+      - .github/workflows/api-external-connection-test.yml
 
-# 과도한 호출로 기관이 IP 를 차단하지 않도록 PR 마다 하나만 돌린다.
+# 과도한 호출로 기관이 IP 를 차단하지 않도록 PR 마다(main push 는 main 에서) 하나만 돌린다.
 concurrency:
-  group: api-external-connection-test-${{ github.event.pull_request.number }}
+  group: api-external-connection-test-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -24,8 +34,8 @@ permissions:
 jobs:
   test-external-connections:
     name: Test external connections
-    # 포크 PR 의 코드는 셀프호스티드 러너에서 시크릿과 함께 실행하지 않는다.
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    # 포크 PR 의 코드는 셀프호스티드 러너에서 시크릿과 함께 실행하지 않는다. main push 는 항상 실행한다.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, osaka]
     timeout-minutes: 20
     steps:

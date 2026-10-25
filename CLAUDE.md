@@ -30,7 +30,7 @@ pnpm 워크스페이스 모노레포. 구조와 실행 방법의 상세는 `READ
 - 공유 상수(포트 등)는 `packages/constants` 에 둔다.
 - 테스트는 외부 연동 서비스(`apps/api/src/external-connection/*-connection.service.ts`)에만 두고,
   같은 폴더에 `*.spec.ts` 로 둔다 (vitest). 실제 API 를 호출하며, 키의 허용 IP 가 등록된 osaka
-  셀프호스티드 러너에서 PR 마다 돌린다 (`.github/workflows/api-external-connection-test.yml`).
+  셀프호스티드 러너에서 PR 마다, 그리고 main 에 push 될 때 돌린다 (`.github/workflows/api-external-connection-test.yml`).
   로컬에서는 키가 없으면 건너뛴다.
 - 코드 주석과 문서는 한국어로 작성한다.
 - `.env*` 파일은 읽거나 커밋하지 않는다.

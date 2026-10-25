@@ -2,7 +2,6 @@ import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
 import { type Collection, type Db, ObjectId } from 'mongodb';
 import { MONGO_DB } from '../../database/database.module';
 import {
-  type CodefInstitution,
   type ConnectionError,
   type ConnectionOf,
   type ExternalConnection,
@@ -72,14 +71,6 @@ export class ExternalConnectionRepository implements OnModuleInit {
     }) as ConnectionOf<P>;
     await this.collection.insertOne(document);
     return document;
-  }
-
-  /** CODEF 기관 계정 목록을 통째로 바꾼다 (계정 추가·삭제 후). */
-  async setCodefInstitutions(id: ObjectId, institutions: CodefInstitution[]): Promise<void> {
-    await this.collection.updateOne(
-      { _id: id, provider: 'codef' },
-      { $set: { institutions, updatedAt: new Date() } },
-    );
   }
 
   /** 외부 서비스 호출에 성공했음을 기록하고 이전 오류를 지운다. */

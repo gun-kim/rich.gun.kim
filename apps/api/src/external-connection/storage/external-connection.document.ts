@@ -4,10 +4,10 @@ import { z } from 'zod';
 /*
  * external_connections 컬렉션의 문서 스키마.
  * 문서 하나는 사용자 한 명의 외부 서비스 연결 하나이고, 사용자당 서비스별로 하나만 둔다.
- * 은행 비밀번호·인증서는 CODEF 가 보관하므로 저장하지 않고, 커넥티드 아이디와 API Key 만 저장한다.
+ * 은행 비밀번호·인증서는 CODEF 가 보관하므로 저장하지 않고, 커넥티드 아이디와 API Key(업비트, 토스증권)만 저장한다.
  */
 
-/** 마지막으로 실패한 호출의 오류 (예: CODEF CF-12100, 업비트 no_authorization_ip) */
+/** 마지막으로 실패한 호출의 오류 (예: CODEF CF-12100, 업비트 no_authorization_ip, 토스증권 ip-not-allowed) */
 export const connectionErrorSchema = z.object({
   code: z.string(),
   message: z.string(),
@@ -64,9 +64,21 @@ export const upbitConnectionSchema = z.object({
   expiresAt: z.date().nullable(),
 });
 
+export const tossinvestConnectionSchema = z.object({
+  ...baseConnection,
+  provider: z.literal('tossinvest'),
+  credentials: z.object({
+    clientId: z.string().min(1),
+    clientSecret: z.string().min(1),
+  }),
+  /** 조회할 계좌의 accountSeq. 계좌 목록 조회로 받아 X-Tossinvest-Account 헤더에 쓴다. */
+  accountSeq: z.number().int(),
+});
+
 export const externalConnectionSchema = z.discriminatedUnion('provider', [
   codefConnectionSchema,
   upbitConnectionSchema,
+  tossinvestConnectionSchema,
 ]);
 
 export type ExternalConnection = z.infer<typeof externalConnectionSchema>;

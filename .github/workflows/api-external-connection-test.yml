@@ -1,5 +1,5 @@
-# PR 에서 외부 연동 서비스(CODEF, 업비트) 테스트를 실제 API 로 돌린다.
-# CODEF 와 업비트 API Key 는 허용 IP 에서만 호출되므로, IP 를 등록해 둔 osaka 셀프호스티드 러너에서 실행한다.
+# PR 에서 외부 연동 서비스(CODEF, 업비트, 토스증권) 테스트를 실제 API 로 돌린다.
+# CODEF 와 업비트·토스증권 API Key 는 허용 IP 에서만 호출되므로, IP 를 등록해 둔 osaka 셀프호스티드 러너에서 실행한다.
 name: Test external connections
 
 on:
@@ -52,3 +52,5 @@ jobs:
           CODEF_CONNECTED_ID_FOR_TEST: ${{ secrets.CODEF_CONNECTED_ID_FOR_TEST }}
           UPBIT_ACCESS_KEY_FOR_TEST: ${{ secrets.UPBIT_ACCESS_KEY_FOR_TEST }}
           UPBIT_SECRET_KEY_FOR_TEST: ${{ secrets.UPBIT_SECRET_KEY_FOR_TEST }}
+          TOSSINVEST_CLIENT_ID_FOR_TEST: ${{ secrets.TOSSINVEST_CLIENT_ID_FOR_TEST }}
+          TOSSINVEST_CLIENT_SECRET_FOR_TEST: ${{ secrets.TOSSINVEST_CLIENT_SECRET_FOR_TEST }}
